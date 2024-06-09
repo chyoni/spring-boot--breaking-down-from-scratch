@@ -56,3 +56,32 @@ tasks.register('buildFatJar', Jar) {
     with jar
 }
 ```
+
+## 스프링 부트는 어떻게 Jar 파일안에 Jar 파일을 추가할까?
+```groovy
+/*
+일반적으로 Jar 파일 안에는 Jar 파일을 넣을 수 없다.
+근데 스프링 부트로 만든 프로젝트를 build 해보면 Jar 파일안에 무수히 많은 내가 추가한 라이브러리들을 Jar 파일로 제공한다.
+어떻게 이게 가능할까?
+
+스프링 부트에서 직접 제공하는 실행 가능한 Jar를 스프링 부트가 제공하기 때문이다.
+
+스프링 부트로 빌드를 해보자. 빌드하면 build/libs에 .jar 파일이 만들어진다.
+이 파일을 다음 명령어로 풀어보자.
+
+jar -xvf xxx.jar
+
+풀어보면 META-INF라는 폴더에 MANIFEST.MF 파일이 있다. 이건 자바에서 규칙으로 만들어놓은 파일이고
+실행하는 메인 클래스를 지정한 파일과 여러 메타데이터가 존재하는 파일이다.
+
+이 파일을 열어보면 
+
+Main-Class: org.springframework.boot.loader.JarLauncher
+Start-Class: hello.boot.BootApplication
+
+이런 내용이 있다. 메인 클래스에 내가 만들지 않은 JarLauncher라는 클래스가 있다. 이게 바로 실행 가능한 Jar 이다.
+
+이걸 실제로 실행하면 라이브러리로 필요한 모든 jar를 실행가능한 상태로 만들어준 다음 Start-Class에 설정된
+실제 스프링 부트 실행 클래스를 호출해서 스프링 부트가 Jar파일안에 Jar를 넣을 수 있게 해주는 것이다.
+*/
+```
